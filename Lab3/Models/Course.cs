@@ -8,7 +8,7 @@ using System.Web;
 
 namespace Lab3.Models
 {
-    public class Course
+    public class Course 
     {
         public int Id { get; set; }
         public ApplicationUser Lecture { get; set; }
