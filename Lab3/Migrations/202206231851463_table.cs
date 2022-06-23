@@ -3,18 +3,20 @@ namespace Lab3.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class PopulateCategoryTable : DbMigration
+    public partial class table : DbMigration
     {
         public override void Up()
         {
             CreateTable(
-                "dbo.Categories",
+                "dbo.Attendances",
                 c => new
                     {
-                        Id = c.Byte(nullable: false),
-                        Name = c.String(nullable: false, maxLength: 255),
+                        CourseId = c.Int(nullable: false),
+                        AttendeeId = c.String(nullable: false, maxLength: 128),
                     })
-                .PrimaryKey(t => t.Id);
+                .PrimaryKey(t => new { t.CourseId, t.AttendeeId })
+                .ForeignKey("dbo.Courses", t => t.CourseId)
+                .Index(t => t.CourseId);
             
             CreateTable(
                 "dbo.Courses",
@@ -34,10 +36,20 @@ namespace Lab3.Migrations
                 .Index(t => t.Lecture_Id);
             
             CreateTable(
+                "dbo.Categories",
+                c => new
+                    {
+                        Id = c.Byte(nullable: false),
+                        Name = c.String(nullable: false, maxLength: 255),
+                    })
+                .PrimaryKey(t => t.Id);
+            
+            CreateTable(
                 "dbo.AspNetUsers",
                 c => new
                     {
                         Id = c.String(nullable: false, maxLength: 128),
+                        Name = c.String(nullable: false, maxLength: 255),
                         Email = c.String(maxLength: 256),
                         EmailConfirmed = c.Boolean(nullable: false),
                         PasswordHash = c.String(),
@@ -106,6 +118,7 @@ namespace Lab3.Migrations
         public override void Down()
         {
             DropForeignKey("dbo.AspNetUserRoles", "RoleId", "dbo.AspNetRoles");
+            DropForeignKey("dbo.Attendances", "CourseId", "dbo.Courses");
             DropForeignKey("dbo.Courses", "Lecture_Id", "dbo.AspNetUsers");
             DropForeignKey("dbo.AspNetUserRoles", "UserId", "dbo.AspNetUsers");
             DropForeignKey("dbo.AspNetUserLogins", "UserId", "dbo.AspNetUsers");
@@ -119,13 +132,15 @@ namespace Lab3.Migrations
             DropIndex("dbo.AspNetUsers", "UserNameIndex");
             DropIndex("dbo.Courses", new[] { "Lecture_Id" });
             DropIndex("dbo.Courses", new[] { "CategoryId" });
+            DropIndex("dbo.Attendances", new[] { "CourseId" });
             DropTable("dbo.AspNetRoles");
             DropTable("dbo.AspNetUserRoles");
             DropTable("dbo.AspNetUserLogins");
             DropTable("dbo.AspNetUserClaims");
             DropTable("dbo.AspNetUsers");
-            DropTable("dbo.Courses");
             DropTable("dbo.Categories");
+            DropTable("dbo.Courses");
+            DropTable("dbo.Attendances");
         }
     }
 }
